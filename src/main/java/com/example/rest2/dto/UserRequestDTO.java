@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CityResponseDTO {
+public class UserRequestDTO {
 
-    private Long id;
-    private String name;
-    private String country;
-    private int population;
-    private double area;
+    private String username;
+    private String password;
+    private String email;
 }

@@ -9,54 +9,65 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service
 public class CityServiceImpl {
 
-    private CityRepository repository;
+    private CityRepository cityRepository;
 
     public List<CityResponseDTO> getAllCities() {
         List<CityResponseDTO> list = new ArrayList<>();
-        repository.findAll().forEach(
+        cityRepository.findAll().forEach(
                 c -> {
-                    CityResponseDTO cdto = new CityResponseDTO(
-                            c.getId(),
-                            c.getName(),
-                            c.getCountry(),
-                            c.getPopulation(),
-                            c.getArea()
+                    CityResponseDTO cityResponseDTO = new CityResponseDTO(
+                            c.getId(), c.getName(), c.getCountry(), c.getPopulation(), c.getArea()
                     );
-                    list.add(cdto);
+                    list.add(cityResponseDTO);
                 }
         );
         return list;
     }
 
-    public CityResponseDTO addCity(CityRequestDTO city) {
-        City c = new City(
+    public CityResponseDTO getCity(Long id) {
+        City city = cityRepository.findById(id).get();
+        return new CityResponseDTO(
+                city.getId(), city.getName(), city.getCountry(), city.getPopulation(), city.getArea()
+        );
+    }
+
+    public CityResponseDTO addCity(CityRequestDTO cityDTO) {
+        City city = new City(
                 null,
-                city.getName(),
-                city.getCountry(),
-                city.getPopulation(),
-                city.getArea()
-                );
-        repository.save(c);
-        CityResponseDTO cdto = new CityResponseDTO();
-        return cdto;
+                cityDTO.getName(),
+                cityDTO.getCountry(),
+                cityDTO.getPopulation(),
+                cityDTO.getArea()
+        );
+        cityRepository.save(city);
+        return new CityResponseDTO(); // почему возвращаем пустой объект??
     }
 
-    public CityResponseDTO updateCity(Long id, CityRequestDTO city){
-        City updatedCity = repository.findById(id).get();
-        updatedCity.setName(city.getName());
-        updatedCity.setCountry(city.getCountry());
-        updatedCity.setPopulation(city.getPopulation());
-        updatedCity.setArea(city.getArea());
+    public CityResponseDTO updateCity(Long id, CityRequestDTO cityDTO) {
+        City city = cityRepository.findById(id).get();
+        city.setName(cityDTO.getName());
+        city.setCountry(cityDTO.getCountry());
+        city.setPopulation(cityDTO.getPopulation());
+        city.setArea(cityDTO.getArea());
 
-        CityResponseDTO cityResponseDTO = new CityResponseDTO();
+        cityRepository.save(city);
 
-        return  cityResponseDTO;
+        return new CityResponseDTO(
+                city.getId(), city.getName(), city.getCountry(), city.getPopulation(), city.getArea()
+        );
     }
 
+
+    public CityResponseDTO deleteCity(Long id) {
+        City city = cityRepository.findById(id).get();
+        cityRepository.deleteById(id);
+        return new CityResponseDTO(
+                city.getId(), city.getName(), city.getCountry(), city.getPopulation(), city.getArea()
+        );
+    }
 }
